@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA ARK 운영시스템</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0f7f4;
+  --bg2:#ffffff;
+  --bg3:#e8f5e9;
+  --border:#c8e6c9;
+  --border2:#a5d6a7;
+  --text:#1b4332;
+  --text2:#52796f;
+  --text3:#74a892;
+  --primary:#2d6a4f;
+  --primary-light:#40916c;
+  --primary-dark:#1b4332;
+  --accent:#95d5b2;
+  --accent2:#b7e4c7;
+  --green:#2d6a4f;
+  --green-light:#52b788;
+  --red:#c1121f;
+  --yellow:#fb8500;
+  --blue:#0077b6;
+  --purple:#7b2cbf;
+  --wood:#dda15e;
+  --wood-light:#faedcd;
+}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#f0f7f4 0%,#e8f5e9 50%,#d8f3dc 100%);color:var(--text);font-size:16px;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(180deg,#1b4332 0%,#2d6a4f 100%);position:fixed;height:100vh;overflow-y:auto;box-shadow:4px 0 20px rgba(27,67,50,0.15)}
+.logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:14px}
+.logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#95d5b2,#52b788);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1b4332;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.logo-text{font-weight:700;font-size:20px;color:#fff;letter-spacing:1px}
+.logo-sub{font-size:10px;color:#95d5b2;text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.nav{padding:16px 12px}
+.nav-title{font-size:10px;font-weight:600;color:#95d5b2;padding:12px 16px 8px;text-transform:uppercase;letter-spacing:2px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:14px;font-weight:500;margin:4px 0;transition:all 0.2s ease}
+.nav-item:hover{background:rgba(255,255,255,0.1);color:#fff;transform:translateX(4px)}
+.nav-item.active{background:linear-gradient(135deg,#52b788,#40916c);color:#fff;box-shadow:0 4px 12px rgba(82,183,136,0.3)}
+.nav-item span{font-size:18px}
+.main{flex:1;margin-left:260px}
+.topbar{height:72px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(27,67,50,0.05)}
+.page-title{font-size:24px;font-weight:700;display:flex;align-items:center;gap:12px;color:var(--primary-dark)}
+.content{padding:32px;max-width:1500px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 4px 20px rgba(27,67,50,0.06)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--bg3)}
+.card-title{font-size:18px;font-weight:700;color:var(--primary-dark)}
+.badge{font-size:12px;padding:6px 14px;border-radius:20px;font-weight:600}
+.badge-blue{background:#e0f2fe;color:#0369a1}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-red{background:#fee2e2;color:#b91c1c}
+.badge-yellow{background:#fef3c7;color:#b45309}
+.badge-purple{background:#f3e8ff;color:#7c3aed}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:32px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(27,67,50,0.05)}
+.stat::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--primary)}
+.stat.green::before{background:linear-gradient(180deg,#52b788,#2d6a4f)}
+.stat.red::before{background:linear-gradient(180deg,#ef4444,#b91c1c)}
+.stat.yellow::before{background:linear-gradient(180deg,#fbbf24,#d97706)}
+.stat.purple::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
+.stat.blue::before{background:linear-gradient(180deg,#38bdf8,#0284c7)}
+.stat-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.stat-value{font-size:24px;font-weight:800;color:var(--primary-dark)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
+.stat-krw{font-size:12px;color:var(--text2);margin-top:4px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+th{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;background:var(--bg3);letter-spacing:0.5px}
+tr:hover{background:var(--bg3)}
+.text-right{text-align:right}
+.text-green{color:var(--green)}
+.text-red{color:var(--red)}
+.text-blue{color:var(--blue)}
+.font-bold{font-weight:700}
+.summary{background:linear-gradient(135deg,#d8f3dc,#b7e4c7);border:2px solid var(--accent);border-radius:16px;padding:24px;margin-bottom:28px}
+.summary-title{font-size:12px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;margin-bottom:16px;letter-spacing:1px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px}
+.summary-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.summary-value{font-size:22px;font-weight:800;color:var(--primary-dark)}
+.summary-krw{font-size:11px;color:var(--text2)}
+.alert{padding:16px 20px;border-radius:12px;margin-bottom:24px;font-size:14px;background:linear-gradient(135deg,#d8f3dc,#b7e4c7);border:1px solid var(--accent);color:var(--primary-dark);display:flex;align-items:center;gap:10px}
+.alert-red{background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #fca5a5;color:#991b1b}
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:0 4px 15px rgba(27,67,50,0.05)}
+.section-header{padding:18px 24px;background:linear-gradient(135deg,var(--bg3),#d8f3dc);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.section-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;color:var(--primary-dark)}
+.section-body{padding:24px}
+.input-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bg3)}
+.input-row:last-child{border-bottom:none}
+.input-row label{font-size:14px;font-weight:500;color:var(--text)}
+.input-row input{width:130px;padding:12px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;text-align:right;color:var(--primary-dark);transition:all 0.2s ease}
+.input-row input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(45,106,79,0.1)}
+.input-row .result{font-size:13px;color:var(--text2);min-width:100px;text-align:right}
+.divider{height:2px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:20px 0}
+.grid{display:grid;gap:24px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:1100px){.grid-2{grid-template-columns:1fr}.sidebar{display:none}.main{margin-left:0}}
+@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}10%{opacity:1;transform:translateX(-50%) translateY(0)}90%{opacity:1}100%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.widget{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,#1b4332,#2d6a4f);border-radius:16px;padding:20px 24px;box-shadow:0 8px 32px rgba(27,67,50,0.3);z-index:100;min-width:280px;color:#fff}
+.widget h4{font-size:10px;font-weight:700;color:#95d5b2;text-transform:uppercase;margin-bottom:14px;letter-spacing:2px}
+.widget-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:rgba(255,255,255,0.8)}
+.widget-row.total{border-top:2px solid rgba(255,255,255,0.2);margin-top:10px;padding-top:14px;font-size:18px;font-weight:700;color:#fff}
+.widget-krw{font-size:11px;color:#95d5b2;margin-top:4px}
+.save-bar{position:fixed;top:72px;right:32px;display:flex;gap:12px;z-index:60;padding-top:16px}
+.save-btn{padding:12px 20px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.save-btn.primary{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff}
+.save-btn.primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,106,79,0.3)}
+.save-btn.danger{background:#fff;border:2px solid #fca5a5;color:#b91c1c}
+.save-btn.danger:hover{background:#fee2e2}
+.toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1b4332,#2d6a4f);color:#fff;padding:16px 32px;border-radius:12px;font-weight:600;z-index:200;animation:fadeInOut 2s ease;box-shadow:0 8px 32px rgba(27,67,50,0.3)}
+.fee-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #fcd34d;border-radius:12px;padding:18px;margin-top:18px}
+.fee-box h5{font-size:12px;font-weight:700;color:#92400e;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
+.fee-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:#78350f}
+.margin-box{background:linear-gradient(135deg,#d8f3dc,#b7e4c7);border:2px solid #6ee7b7;border-radius:12px;padding:18px;margin-top:18px}
+.margin-box h5{font-size:12px;font-weight:700;color:#065f46;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
+.margin-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:#065f46}
+.live-dot{width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;margin-right:8px;animation:pulse 1.5s infinite;box-shadow:0 0 8px #22c55e}
+.btc-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:16px;padding:24px;margin-bottom:24px}
+.btc-price{font-size:32px;font-weight:800;color:#d97706}
+.btc-change{font-size:13px;padding:6px 12px;border-radius:20px;font-weight:600;margin-left:12px}
+.btc-change.up{background:#dcfce7;color:#166534}
+.btc-change.down{background:#fee2e2;color:#b91c1c}
+.eco-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#d8f3dc,#b7e4c7);padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;color:#166534;margin-left:12px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useMemo,useEffect}=React;
+const RATE=1400;const STORAGE_KEY='nova_ark_v11';
+const D={
+  mem:{t1:{n:200,p:5000000},t2:{n:700,p:1500000},t3:{n:700,p:500000}},
+  fee:10,
+  land:{ha:573,price:5396,comm:2,legal:200000},
+  energy:{t1kw:8,t2kw:5,t3kw:3,commKw:2000,dcKw:1500,mineKw:5000,geoMW:5,hydroMW:15,solarMW:3,windMW:5,geoCostPerMW:800000,hydroCost:600000,solarCost:800000,windCost:900000},
+  build:{t1:1250000,t2:450000,t3:300000,hosp:30000000,comm:5000000,school:10000000,uni:4000000,sports:11000000,lib:2000000,theater:5000000,market:4000000,worship:1500000,daycare:2000000,senior:4000000,reserve:4000000,roads:10000000,water:5000000,sewer:6000000,grid:11000000,telecom:3000000,gh:5000000,smart:20000000,live:6000000,fish:3000000,storage:5000000,proc:4000000},
+  equip:{security:5000000,medical:10000000,education:3000000,dining:3000000,maintenance:2000000,admin:500000,it:1000000,garden:500000,salon:300000,control:2000000,driver:1500000,cleaning:500000,laundry:800000},
+  maintRate:0.05,
+  staff:{security:{n:100,sal:40000},medical:{doc:20,nur:60,docSal:150000,nurSal:60000},education:{teach:100,prof:40,tSal:60000,pSal:100000},dining:{chef:30,staff:80,sal:35000},maintenance:{n:50,sal:40000},admin:{n:30,sal:50000},it:{n:20,sal:70000},mining:{n:15,sal:60000},garden:{n:30,sal:35000},fitness:{n:20,sal:40000},salon:{n:15,sal:35000},control:{n:25,sal:55000},concierge:{n:20,sal:45000},driver:{n:30,sal:38000},cleaning:{n:60,sal:32000},laundry:{n:15,sal:32000},farm:{n:40,sal:38000},livestock:{n:20,sal:38000},retail:{n:25,sal:35000}},
+  dc:{srv:200,cost:8000,infra:2000000},
+  mine:{rigs:4000,cost:5000,active:3928,hashPerRig:110},
+  res:{total:50000000},
+  income:{dcRental:0,other:0}
+};
+
+function calc(s,btc){
+  const hh=s.mem.t1.n+s.mem.t2.n+s.mem.t3.n;
+  const gross={t1:s.mem.t1.n*s.mem.t1.p,t2:s.mem.t2.n*s.mem.t2.p,t3:s.mem.t3.n*s.mem.t3.p};
+  gross.total=gross.t1+gross.t2+gross.t3;
+  const fee=gross.total*(s.fee/100);const net=gross.total-fee;
+  const eD={t1:s.mem.t1.n*s.energy.t1kw,t2:s.mem.t2.n*s.energy.t2kw,t3:s.mem.t3.n*s.energy.t3kw,comm:s.energy.commKw,dc:s.energy.dcKw,mine:s.energy.mineKw};
+  eD.res=eD.t1+eD.t2+eD.t3;eD.total=eD.res+eD.comm+eD.dc+eD.mine;
+  const eS=(s.energy.geoMW+s.energy.hydroMW+s.energy.solarMW+s.energy.windMW)*1000;
+  const eC=s.energy.geoMW*s.energy.geoCostPerMW+s.energy.hydroMW*s.energy.hydroCost+s.energy.solarMW*s.energy.solarCost+s.energy.windMW*s.energy.windCost;
+  const land=s.land.ha*s.land.price*(1+s.land.comm/100)+s.land.legal;
+  const bldT1=s.mem.t1.n*s.build.t1,bldT2=s.mem.t2.n*s.build.t2,bldT3=s.mem.t3.n*s.build.t3;
+  const bldH=bldT1+bldT2+bldT3;
+  const bldF=s.build.hosp+s.build.comm+s.build.school+s.build.uni+s.build.sports+s.build.lib+s.build.theater+s.build.market+s.build.worship+s.build.daycare+s.build.senior+s.build.reserve;
+  const bldI=s.build.roads+s.build.water+s.build.sewer+s.build.grid+s.build.telecom;
+  const bldA=s.build.gh+s.build.smart+s.build.live+s.build.fish+s.build.storage+s.build.proc;
+  const bldT=bldH+bldF+bldI+bldA;
+  const equipT=Object.values(s.equip).reduce((a,b)=>a+b,0);
+  const maintYear=equipT*s.maintRate;
+  const st=s.staff;
+  const laborYear={
+    security:st.security.n*st.security.sal,
+    medical:st.medical.doc*st.medical.docSal+st.medical.nur*st.medical.nurSal,
+    education:st.education.teach*st.education.tSal+st.education.prof*st.education.pSal,
+    dining:(st.dining.chef+st.dining.staff)*st.dining.sal,
+    maintenance:st.maintenance.n*st.maintenance.sal,
+    admin:st.admin.n*st.admin.sal,
+    it:st.it.n*st.it.sal,
+    mining:st.mining.n*st.mining.sal,
+    garden:st.garden.n*st.garden.sal,
+    fitness:st.fitness.n*st.fitness.sal,
+    salon:st.salon.n*st.salon.sal,
+    control:st.control.n*st.control.sal,
+    concierge:st.concierge.n*st.concierge.sal,
+    driver:st.driver.n*st.driver.sal,
+    cleaning:st.cleaning.n*st.cleaning.sal,
+    laundry:st.laundry.n*st.laundry.sal,
+    farm:st.farm.n*st.farm.sal,
+    livestock:st.livestock.n*st.livestock.sal,
+    retail:st.retail.n*st.retail.sal
+  };
+  const laborTotal=Object.values(laborYear).reduce((a,b)=>a+b,0);
+  const laborMonth=laborTotal/12;
+  const dc=s.dc.srv*s.dc.cost+s.dc.infra;
+  const mineCost=s.mine.rigs*s.mine.cost;
+  const activeRate=s.mine.rigs>0?s.mine.active/s.mine.rigs:0;
+  const totalHashTH=s.mine.active*s.mine.hashPerRig;
+  const totalHashEH=totalHashTH/1e6;
+  const networkEH=btc.networkHash;
+  const dailyBTC=networkEH>0?(totalHashEH/networkEH)*144*6.25:0;
+  const dailyUSD=dailyBTC*btc.price;
+  const mineRev={dailyBTC,dailyUSD,monthlyBTC:dailyBTC*30,monthlyUSD:dailyUSD*30,yearlyBTC:dailyBTC*365,yearlyUSD:dailyUSD*365,totalHashTH,totalHashEH};
+  const exp=land+eC+bldT+equipT+dc+mineCost+s.res.total;
+  const totalExp=exp+fee;
+  const marginT1=s.mem.t1.p-s.build.t1,marginT2=s.mem.t2.p-s.build.t2,marginT3=s.mem.t3.p-s.build.t3;
+  const marginRateT1=(marginT1/s.mem.t1.p*100),marginRateT2=(marginT2/s.mem.t2.p*100),marginRateT3=(marginT3/s.mem.t3.p*100);
+  return{hh,ppl:Math.round(hh*3.125),gross,fee,net,eD,eS,eC,land,bldT1,bldT2,bldT3,bldH,bldF,bldI,bldA,bldT,equipT,maintYear,laborYear,laborTotal,laborMonth,dc,mineCost,mineRev,res:s.res.total,exp,totalExp,bal:net-exp,marginT1,marginT2,marginT3,marginRateT1,marginRateT2,marginRateT3,activeRate};
+}
+
+const fmt=v=>{const a=Math.abs(v);if(a>=1e9)return`$${(v/1e9).toFixed(2)}B`;if(a>=1e6)return`$${(v/1e6).toFixed(1)}M`;if(a>=1e3)return`$${(v/1e3).toFixed(0)}K`;return`$${v.toLocaleString()}`};
+const fmtK=v=>{const k=v*RATE;if(Math.abs(k)>=1e12)return`₩${(k/1e12).toFixed(2)}조`;if(Math.abs(k)>=1e8)return`₩${(k/1e8).toFixed(0)}억`;return`₩${k.toLocaleString()}`};
+const fmtBoth=v=>`${fmt(v)} (${fmtK(v)})`;
+const fmtN=v=>v.toLocaleString();
+const fmtP=v=>`${v.toFixed(1)}%`;
+const fmtBTC=v=>v.toFixed(4);
+
+const Stat=({label,value,sub,color='',krw})=><div className={`stat ${color}`}><div className="stat-label">{label}</div><div className="stat-value">{value}</div>{krw&&<div className="stat-krw">{krw}</div>}{sub&&<div className="stat-sub">{sub}</div>}</div>;
+
+const Input=({label,value,onChange,suf='',pre='',result})=>{
+  const[local,setLocal]=useState(String(value));
+  useEffect(()=>{setLocal(String(value));},[value]);
+  const handleChange=e=>{setLocal(e.target.value);};
+  const handleBlur=()=>{const n=Number(local);if(!isNaN(n))onChange(n);else setLocal(String(value));};
+  const handleKey=e=>{if(e.key==='Enter')e.target.blur();};
+  return<div className="input-row"><label>{label}</label><div style={{display:'flex',alignItems:'center',gap:'8px'}}>{result&&<span className="result">{result}</span>}{pre&&<span style={{color:'var(--text2)',fontWeight:500}}>{pre}</span>}<input type="text" inputMode="numeric" value={local} onChange={handleChange} onBlur={handleBlur} onKeyDown={handleKey}/>{suf&&<span style={{color:'var(--text2)',fontWeight:500}}>{suf}</span>}</div></div>;
+};
+const Sidebar=({page,setPage})=>{
+  const nav=[{id:'dashboard',icon:'📊',label:'대시보드'},{id:'income',icon:'💰',label:'수입'},{id:'expense',icon:'💸',label:'지출'},{id:'membership',icon:'👥',label:'멤버십'},{id:'construction',icon:'🏗️',label:'건축'},{id:'energy',icon:'⚡',label:'에너지'},{id:'services',icon:'🏥',label:'서비스/인력'},{id:'tech',icon:'🖥️',label:'기술'}];
+  return<div className="sidebar">
+    <div className="logo">
+      <div className="logo-icon">NA</div>
+      <div><div className="logo-text">NOVA ARK</div><div className="logo-sub">Smart Green City</div></div>
+    </div>
+    <div className="nav">
+      <div className="nav-title">메뉴</div>
+      {nav.map(n=><div key={n.id} className={`nav-item ${page===n.id?'active':''}`} onClick={()=>setPage(n.id)}><span>{n.icon}</span>{n.label}</div>)}
+    </div>
+  </div>;
+};
+
+const Dashboard=({s,f,btc})=><div>
+  <div className="alert">🌿 100% 재생에너지 기반 스마트 그린시티 | 환율: $1 = ₩{RATE.toLocaleString()}</div>
+  {f.bal<0&&<div className="alert alert-red">⚠️ 적자 상태입니다.</div>}
+  <div className="stats">
+    <Stat label="총 가구" value={fmtN(f.hh)} sub={`약 ${fmtN(f.ppl)}명`}/>
+    <Stat label="총 수입" value={fmt(f.gross.total)} krw={fmtK(f.gross.total)} color="green"/>
+    <Stat label="본사 로얄티" value={fmt(f.fee)} krw={fmtK(f.fee)} sub={`${s.fee}%`} color="yellow"/>
+    <Stat label="순 수입" value={fmt(f.net)} krw={fmtK(f.net)} color="green"/>
+    <Stat label="총 지출" value={fmt(f.totalExp)} krw={fmtK(f.totalExp)} color="red"/>
+    <Stat label="잉여금" value={fmt(f.bal)} krw={fmtK(f.bal)} sub={f.bal>=0?'흑자 ✓':'적자 ⚠️'} color={f.bal>=0?'green':'red'}/>
+  </div>
+  <div className="grid grid-2">
+    <div className="card"><div className="card-header"><span className="card-title">📊 멤버십 & 마진</span></div>
+      <table><thead><tr><th>티어</th><th className="text-right">판매가</th><th className="text-right">건축비</th><th className="text-right">마진</th><th className="text-right">마진율</th></tr></thead><tbody>
+        <tr><td><span className="badge badge-yellow">T1 Sovereign</span></td><td className="text-right">{fmt(s.mem.t1.p)}</td><td className="text-right">{fmt(s.build.t1)}</td><td className="text-right font-bold text-green">{fmt(f.marginT1)}</td><td className="text-right">{fmtP(f.marginRateT1)}</td></tr>
+        <tr><td><span className="badge badge-purple">T2 Guardian</span></td><td className="text-right">{fmt(s.mem.t2.p)}</td><td className="text-right">{fmt(s.build.t2)}</td><td className="text-right font-bold text-green">{fmt(f.marginT2)}</td><td className="text-right">{fmtP(f.marginRateT2)}</td></tr>
+        <tr><td><span className="badge badge-blue">T3 Citizen</span></td><td className="text-right">{fmt(s.mem.t3.p)}</td><td className="text-right">{fmt(s.build.t3)}</td><td className="text-right font-bold text-green">{fmt(f.marginT3)}</td><td className="text-right">{fmtP(f.marginRateT3)}</td></tr>
+      </tbody></table>
+    </div>
+    <div className="card"><div className="card-header"><span className="card-title">⚡ 그린 에너지<span className="eco-badge">🌱 100% 재생</span></span></div>
+      <table><tbody>
+        <tr><td>필요 전력</td><td className="text-right font-bold">{(f.eD.total/1000).toFixed(1)} MW</td></tr>
+        <tr><td>발전 용량</td><td className="text-right font-bold text-green">{(f.eS/1000).toFixed(1)} MW</td></tr>
+        <tr style={{background:'var(--bg3)'}}><td className="font-bold">잉여 전력</td><td className="text-right font-bold text-blue">{((f.eS-f.eD.total)/1000).toFixed(1)} MW</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div className="card"><div className="card-header"><span className="card-title">💸 초기 지출 내역</span></div>
+    <table><thead><tr><th>항목</th><th className="text-right">금액</th><th className="text-right">원화</th><th className="text-right">비율</th></tr></thead><tbody>
+      <tr style={{background:'#fef9c3'}}><td>💼 본사 로얄티</td><td className="text-right">{fmt(f.fee)}</td><td className="text-right">{fmtK(f.fee)}</td><td className="text-right">{fmtP(f.fee/f.totalExp*100)}</td></tr>
+      <tr><td>🗺️ 토지</td><td className="text-right">{fmt(f.land)}</td><td className="text-right">{fmtK(f.land)}</td><td className="text-right">{fmtP(f.land/f.totalExp*100)}</td></tr>
+      <tr><td>⚡ 에너지</td><td className="text-right">{fmt(f.eC)}</td><td className="text-right">{fmtK(f.eC)}</td><td className="text-right">{fmtP(f.eC/f.totalExp*100)}</td></tr>
+      <tr><td>🏠 주거 건축</td><td className="text-right">{fmt(f.bldH)}</td><td className="text-right">{fmtK(f.bldH)}</td><td className="text-right">{fmtP(f.bldH/f.totalExp*100)}</td></tr>
+      <tr><td>🏛️ 공용시설</td><td className="text-right">{fmt(f.bldF)}</td><td className="text-right">{fmtK(f.bldF)}</td><td className="text-right">{fmtP(f.bldF/f.totalExp*100)}</td></tr>
+      <tr><td>🛠️ 인프라</td><td className="text-right">{fmt(f.bldI)}</td><td className="text-right">{fmtK(f.bldI)}</td><td className="text-right">{fmtP(f.bldI/f.totalExp*100)}</td></tr>
+      <tr><td>🌾 농업/식량</td><td className="text-right">{fmt(f.bldA)}</td><td className="text-right">{fmtK(f.bldA)}</td><td className="text-right">{fmtP(f.bldA/f.totalExp*100)}</td></tr>
+      <tr><td>🔧 초기 장비</td><td className="text-right">{fmt(f.equipT)}</td><td className="text-right">{fmtK(f.equipT)}</td><td className="text-right">{fmtP(f.equipT/f.totalExp*100)}</td></tr>
+      <tr><td>🖥️ 데이터센터</td><td className="text-right">{fmt(f.dc)}</td><td className="text-right">{fmtK(f.dc)}</td><td className="text-right">{fmtP(f.dc/f.totalExp*100)}</td></tr>
+      <tr><td>⛏️ 마이닝</td><td className="text-right">{fmt(f.mineCost)}</td><td className="text-right">{fmtK(f.mineCost)}</td><td className="text-right">{fmtP(f.mineCost/f.totalExp*100)}</td></tr>
+      <tr><td>🏦 비축금</td><td className="text-right">{fmt(f.res)}</td><td className="text-right">{fmtK(f.res)}</td><td className="text-right">{fmtP(f.res/f.totalExp*100)}</td></tr>
+      <tr style={{background:'#fee2e2'}}><td className="font-bold">총계</td><td className="text-right font-bold text-red">{fmt(f.totalExp)}</td><td className="text-right font-bold">{fmtK(f.totalExp)}</td><td className="text-right font-bold">100%</td></tr>
+    </tbody></table>
+  </div>
+  <div className="summary"><div className="summary-title">🌿 핵심 지표</div><div className="summary-grid">
+    <div><div className="summary-label">가구당 지출</div><div className="summary-value">{fmt(f.totalExp/f.hh)}</div><div className="summary-krw">{fmtK(f.totalExp/f.hh)}</div></div>
+    <div><div className="summary-label">연간 인건비</div><div className="summary-value">{fmt(f.laborTotal)}</div><div className="summary-krw">{fmtK(f.laborTotal)}</div></div>
+    <div><div className="summary-label">마이닝 연수익</div><div className="summary-value" style={{color:'#166534'}}>{fmt(f.mineRev.yearlyUSD)}</div><div className="summary-krw">{fmtBTC(f.mineRev.yearlyBTC)} BTC</div></div>
+    <div><div className="summary-label">BTC 실시간</div><div className="summary-value">${fmtN(Math.round(btc.price))}</div><div className="summary-krw"><span className="live-dot"></span>LIVE</div></div>
+  </div></div>
+</div>;
+const Income=({s,setS,f,btc})=>{
+  const updI=(k,v)=>setS(p=>({...p,income:{...p.income,[k]:v}}));
+  return<div>
+    <div className="stats">
+      <Stat label="멤버십 수입" value={fmt(f.gross.total)} krw={fmtK(f.gross.total)} color="green"/>
+      <Stat label="마이닝 수익(연)" value={fmt(f.mineRev.yearlyUSD)} krw={`${fmtBTC(f.mineRev.yearlyBTC)} BTC`} color="yellow"/>
+      <Stat label="DC 임대 수익" value={fmt(s.income.dcRental)} krw={fmtK(s.income.dcRental)} color="purple"/>
+      <Stat label="기타 수입" value={fmt(s.income.other)} krw={fmtK(s.income.other)} color="blue"/>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">👥 티어별 입금</div><span className="badge badge-green">{fmtBoth(f.gross.total)}</span></div>
+      <div className="section-body">
+        <table><thead><tr><th>티어</th><th className="text-right">가구수</th><th className="text-right">단가</th><th className="text-right">합계</th></tr></thead><tbody>
+          <tr><td><span className="badge badge-yellow">Tier 1 Sovereign</span></td><td className="text-right">{s.mem.t1.n}</td><td className="text-right">{fmt(s.mem.t1.p)}</td><td className="text-right font-bold">{fmtBoth(f.gross.t1)}</td></tr>
+          <tr><td><span className="badge badge-purple">Tier 2 Guardian</span></td><td className="text-right">{s.mem.t2.n}</td><td className="text-right">{fmt(s.mem.t2.p)}</td><td className="text-right font-bold">{fmtBoth(f.gross.t2)}</td></tr>
+          <tr><td><span className="badge badge-blue">Tier 3 Citizen</span></td><td className="text-right">{s.mem.t3.n}</td><td className="text-right">{fmt(s.mem.t3.p)}</td><td className="text-right font-bold">{fmtBoth(f.gross.t3)}</td></tr>
+          <tr style={{background:'#dcfce7'}}><td className="font-bold">합계</td><td className="text-right font-bold">{f.hh}</td><td></td><td className="text-right font-bold text-green">{fmtBoth(f.gross.total)}</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">⛏️ 마이닝 수익</div><span className="badge badge-yellow"><span className="live-dot"></span>실시간</span></div>
+      <div className="section-body">
+        <div className="btc-card">
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
+            <div><div style={{fontSize:12,color:'var(--text2)',marginBottom:6}}><span className="live-dot"></span>BTC 실시간 가격</div><span className="btc-price">${fmtN(Math.round(btc.price))}</span><span className={`btc-change ${btc.change>=0?'up':'down'}`}>{btc.change>=0?'▲':'▼'} {Math.abs(btc.change).toFixed(1)}%</span></div>
+            <div style={{textAlign:'right'}}><div style={{fontSize:12,color:'var(--text2)',marginBottom:6}}>네트워크 해시레이트</div><div style={{fontSize:22,fontWeight:700,color:'#d97706'}}>{btc.networkHash.toFixed(2)} EH/s</div></div>
+          </div>
+        </div>
+        <table><tbody>
+          <tr><td>가동률</td><td className="text-right font-bold">{fmtP(f.activeRate*100)} ({fmtN(s.mine.active)} / {fmtN(s.mine.rigs)} 대)</td></tr>
+          <tr><td>총 해시레이트</td><td className="text-right font-bold">{fmtN(Math.round(f.mineRev.totalHashTH))} TH/s ({f.mineRev.totalHashEH.toFixed(4)} EH/s)</td></tr>
+          <tr style={{background:'#fef9c3'}}><td className="font-bold">일일 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.dailyBTC)} BTC ≈ {fmt(f.mineRev.dailyUSD)}/day</td></tr>
+          <tr><td>월간 채굴 수익</td><td className="text-right">{fmtBTC(f.mineRev.monthlyBTC)} BTC ≈ {fmt(f.mineRev.monthlyUSD)}/month</td></tr>
+          <tr style={{background:'#dcfce7'}}><td className="font-bold">연간 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.yearlyBTC)} BTC ≈ {fmtBoth(f.mineRev.yearlyUSD)}/year</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🖥️ 데이터센터 임대 수익</div><span className="badge badge-purple">{fmtBoth(s.income.dcRental)}</span></div>
+      <div className="section-body"><Input label="연간 임대 수익" value={s.income.dcRental} onChange={v=>updI('dcRental',v)} pre="$" result={fmtK(s.income.dcRental)}/></div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">📦 기타 수입</div><span className="badge badge-blue">{fmtBoth(s.income.other)}</span></div>
+      <div className="section-body"><Input label="기타 연간 수입" value={s.income.other} onChange={v=>updI('other',v)} pre="$" result={fmtK(s.income.other)}/></div>
+    </div>
+  </div>;
+};
+const Expense=({s,setS,f})=>{
+  const updEq=(k,v)=>setS(p=>({...p,equip:{...p.equip,[k]:v}}));
+  const updMR=v=>setS(p=>({...p,maintRate:v/100}));
+  const laborNames={security:'🛡️ 보안',medical:'🏥 의료',education:'🎓 교육',dining:'🍽️ 식당',maintenance:'🔧 시설관리',admin:'📋 행정',it:'💻 IT',mining:'⛏️ 마이닝',garden:'🌳 조경',fitness:'🏋️ 피트니스',salon:'💇 미용',control:'📡 관제',concierge:'🛎️ 컨시어지',driver:'🚐 운송',cleaning:'🧹 청소',laundry:'👔 세탁',farm:'🌾 농장',livestock:'🐄 축산',retail:'🛒 리테일'};
+  return<div>
+    <div className="stats">
+      <Stat label="초기 지출" value={fmt(f.exp)} krw={fmtK(f.exp)} color="red"/>
+      <Stat label="초기 장비" value={fmt(f.equipT)} krw={fmtK(f.equipT)} color="purple"/>
+      <Stat label="연간 인건비" value={fmt(f.laborTotal)} krw={fmtK(f.laborTotal)} color="blue"/>
+      <Stat label="연간 유지보수" value={fmt(f.maintYear)} krw={fmtK(f.maintYear)} color="yellow"/>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🏗️ 건축 지출</div><span className="badge badge-blue">{fmtBoth(f.bldT)}</span></div>
+      <div className="section-body"><table><thead><tr><th>항목</th><th className="text-right">금액</th><th className="text-right">원화</th></tr></thead><tbody>
+        <tr><td>🏠 주거 건축</td><td className="text-right">{fmt(f.bldH)}</td><td className="text-right">{fmtK(f.bldH)}</td></tr>
+        <tr><td style={{paddingLeft:30}}>- T1 ({s.mem.t1.n}채)</td><td className="text-right">{fmt(f.bldT1)}</td><td className="text-right">{fmtK(f.bldT1)}</td></tr>
+        <tr><td style={{paddingLeft:30}}>- T2 ({s.mem.t2.n}채)</td><td className="text-right">{fmt(f.bldT2)}</td><td className="text-right">{fmtK(f.bldT2)}</td></tr>
+        <tr><td style={{paddingLeft:30}}>- T3 ({s.mem.t3.n}채)</td><td className="text-right">{fmt(f.bldT3)}</td><td className="text-right">{fmtK(f.bldT3)}</td></tr>
+        <tr><td>🏛️ 공용시설</td><td className="text-right">{fmt(f.bldF)}</td><td className="text-right">{fmtK(f.bldF)}</td></tr>
+        <tr style={{background:'#dbeafe'}}><td className="font-bold">건축 소계</td><td className="text-right font-bold">{fmt(f.bldT)}</td><td className="text-right font-bold">{fmtK(f.bldT)}</td></tr>
+      </tbody></table></div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🛠️ 인프라 지출</div><span className="badge badge-yellow">{fmtBoth(f.bldI+f.land+f.eC)}</span></div>
+      <div className="section-body"><table><thead><tr><th>항목</th><th className="text-right">금액</th><th className="text-right">원화</th></tr></thead><tbody>
+        <tr><td>🗺️ 토지</td><td className="text-right">{fmt(f.land)}</td><td className="text-right">{fmtK(f.land)}</td></tr>
+        <tr><td>⚡ 에너지 설비</td><td className="text-right">{fmt(f.eC)}</td><td className="text-right">{fmtK(f.eC)}</td></tr>
+        <tr><td>🛣️ 도로망</td><td className="text-right">{fmt(s.build.roads)}</td><td className="text-right">{fmtK(s.build.roads)}</td></tr>
+        <tr><td>💧 상수도</td><td className="text-right">{fmt(s.build.water)}</td><td className="text-right">{fmtK(s.build.water)}</td></tr>
+        <tr><td>🚿 하수도</td><td className="text-right">{fmt(s.build.sewer)}</td><td className="text-right">{fmtK(s.build.sewer)}</td></tr>
+        <tr><td>⚡ 전력망</td><td className="text-right">{fmt(s.build.grid)}</td><td className="text-right">{fmtK(s.build.grid)}</td></tr>
+        <tr><td>📡 통신망</td><td className="text-right">{fmt(s.build.telecom)}</td><td className="text-right">{fmtK(s.build.telecom)}</td></tr>
+        <tr style={{background:'#fef9c3'}}><td className="font-bold">인프라 소계</td><td className="text-right font-bold">{fmt(f.bldI+f.land+f.eC)}</td><td className="text-right font-bold">{fmtK(f.bldI+f.land+f.eC)}</td></tr>
+      </tbody></table></div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🔧 초기 장비 (1회성)</div><span className="badge badge-purple">{fmtBoth(f.equipT)}</span></div>
+      <div className="section-body">
+        <Input label="🛡️ 보안 장비/차량" value={s.equip.security} onChange={v=>updEq('security',v)} pre="$" result={fmtK(s.equip.security)}/>
+        <Input label="🏥 의료 장비" value={s.equip.medical} onChange={v=>updEq('medical',v)} pre="$" result={fmtK(s.equip.medical)}/>
+        <Input label="🎓 교육 장비" value={s.equip.education} onChange={v=>updEq('education',v)} pre="$" result={fmtK(s.equip.education)}/>
+        <Input label="🍽️ 주방/식당 장비" value={s.equip.dining} onChange={v=>updEq('dining',v)} pre="$" result={fmtK(s.equip.dining)}/>
+        <Input label="🔧 시설관리 장비" value={s.equip.maintenance} onChange={v=>updEq('maintenance',v)} pre="$" result={fmtK(s.equip.maintenance)}/>
+        <Input label="📋 사무/행정 장비" value={s.equip.admin} onChange={v=>updEq('admin',v)} pre="$" result={fmtK(s.equip.admin)}/>
+        <Input label="💻 IT 장비" value={s.equip.it} onChange={v=>updEq('it',v)} pre="$" result={fmtK(s.equip.it)}/>
+        <Input label="🌳 조경 장비" value={s.equip.garden} onChange={v=>updEq('garden',v)} pre="$" result={fmtK(s.equip.garden)}/>
+        <Input label="💇 미용 장비" value={s.equip.salon} onChange={v=>updEq('salon',v)} pre="$" result={fmtK(s.equip.salon)}/>
+        <Input label="📡 관제 장비" value={s.equip.control} onChange={v=>updEq('control',v)} pre="$" result={fmtK(s.equip.control)}/>
+        <Input label="🚐 차량" value={s.equip.driver} onChange={v=>updEq('driver',v)} pre="$" result={fmtK(s.equip.driver)}/>
+        <Input label="🧹 청소 장비" value={s.equip.cleaning} onChange={v=>updEq('cleaning',v)} pre="$" result={fmtK(s.equip.cleaning)}/>
+        <Input label="👔 세탁 장비" value={s.equip.laundry} onChange={v=>updEq('laundry',v)} pre="$" result={fmtK(s.equip.laundry)}/>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🔄 연간 유지보수비</div><span className="badge badge-yellow">{fmtBoth(f.maintYear)}</span></div>
+      <div className="section-body">
+        <Input label="유지보수율 (장비 대비)" value={Math.round(s.maintRate*100)} onChange={updMR} suf="%"/>
+        <div className="divider"></div>
+        <table><tbody>
+          <tr><td>초기 장비 총액</td><td className="text-right">{fmtBoth(f.equipT)}</td></tr>
+          <tr><td>유지보수율</td><td className="text-right">{fmtP(s.maintRate*100)}</td></tr>
+          <tr style={{background:'#fef9c3'}}><td className="font-bold">연간 유지보수비</td><td className="text-right font-bold">{fmtBoth(f.maintYear)}</td></tr>
+          <tr><td>월간 유지보수비</td><td className="text-right">{fmtBoth(f.maintYear/12)}</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">👥 인건비</div><span className="badge badge-blue">{fmtBoth(f.laborTotal)}</span></div>
+      <div className="section-body">
+        <table><thead><tr><th>부서</th><th className="text-right">연간</th><th className="text-right">월간</th></tr></thead><tbody>
+          {Object.entries(f.laborYear).map(([k,v])=><tr key={k}><td>{laborNames[k]||k}</td><td className="text-right">{fmt(v)}</td><td className="text-right">{fmt(v/12)}</td></tr>)}
+          <tr style={{background:'#dbeafe'}}><td className="font-bold">합계</td><td className="text-right font-bold">{fmtBoth(f.laborTotal)}</td><td className="text-right font-bold">{fmtBoth(f.laborMonth)}</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div className="summary"><div className="summary-title">💸 총 지출 요약</div>
+      <table><thead><tr><th>분류</th><th className="text-right">금액</th><th className="text-right">비율</th></tr></thead><tbody>
+        <tr><td>🏗️ 건축</td><td className="text-right">{fmt(f.bldT)}</td><td className="text-right">{fmtP(f.bldT/f.totalExp*100)}</td></tr>
+        <tr><td>🛠️ 인프라</td><td className="text-right">{fmt(f.bldI+f.land+f.eC)}</td><td className="text-right">{fmtP((f.bldI+f.land+f.eC)/f.totalExp*100)}</td></tr>
+        <tr><td>🌾 농업</td><td className="text-right">{fmt(f.bldA)}</td><td className="text-right">{fmtP(f.bldA/f.totalExp*100)}</td></tr>
+        <tr><td>🔧 초기 장비</td><td className="text-right">{fmt(f.equipT)}</td><td className="text-right">{fmtP(f.equipT/f.totalExp*100)}</td></tr>
+        <tr><td>🖥️ 기술</td><td className="text-right">{fmt(f.dc+f.mineCost)}</td><td className="text-right">{fmtP((f.dc+f.mineCost)/f.totalExp*100)}</td></tr>
+        <tr><td>💼 기타</td><td className="text-right">{fmt(f.fee+f.res)}</td><td className="text-right">{fmtP((f.fee+f.res)/f.totalExp*100)}</td></tr>
+        <tr style={{background:'#fee2e2'}}><td className="font-bold">초기 지출 총계</td><td className="text-right font-bold text-red">{fmt(f.totalExp)}</td><td className="text-right font-bold">100%</td></tr>
+      </tbody></table>
+      <div className="divider"></div>
+      <table><thead><tr><th>운영비 (연간)</th><th className="text-right">금액</th></tr></thead><tbody>
+        <tr><td>👥 인건비</td><td className="text-right">{fmtBoth(f.laborTotal)}</td></tr>
+        <tr><td>🔄 유지보수비</td><td className="text-right">{fmtBoth(f.maintYear)}</td></tr>
+        <tr style={{background:'#fef9c3'}}><td className="font-bold">연간 운영비 총계</td><td className="text-right font-bold">{fmtBoth(f.laborTotal+f.maintYear)}</td></tr>
+        <tr><td>월간 운영비</td><td className="text-right">{fmtBoth((f.laborTotal+f.maintYear)/12)}</td></tr>
+      </tbody></table>
+    </div>
+  </div>;
+};
+const Membership=({s,setS,f})=>{
+  const upd=(t,k,v)=>setS(p=>({...p,mem:{...p.mem,[t]:{...p.mem[t],[k]:v}}}));
+  return<div>
+    <div className="stats">
+      <Stat label="총 가구" value={fmtN(f.hh)} sub={`약 ${fmtN(f.ppl)}명`}/>
+      <Stat label="총 수입" value={fmt(f.gross.total)} krw={fmtK(f.gross.total)} color="green"/>
+      <Stat label="본사 로얄티" value={fmt(f.fee)} krw={fmtK(f.fee)} sub={`${s.fee}%`} color="yellow"/>
+      <Stat label="순 수입" value={fmt(f.net)} krw={fmtK(f.net)} color="green"/>
+    </div>
+    {[{k:'t1',n:'Tier 1 - Sovereign (100평)',c:'#f59e0b',bg:'#fef3c7',i:'👑',cost:s.build.t1,margin:f.marginT1,rate:f.marginRateT1},{k:'t2',n:'Tier 2 - Guardian (45평)',c:'#8b5cf6',bg:'#ede9fe',i:'🛡️',cost:s.build.t2,margin:f.marginT2,rate:f.marginRateT2},{k:'t3',n:'Tier 3 - Citizen (25평)',c:'#0ea5e9',bg:'#e0f2fe',i:'🏠',cost:s.build.t3,margin:f.marginT3,rate:f.marginRateT3}].map(t=>
+      <div className="section" key={t.k} style={{borderLeft:`4px solid ${t.c}`}}>
+        <div className="section-header"><div className="section-title"><span style={{fontSize:22}}>{t.i}</span>{t.n}</div><span className="badge" style={{background:t.bg,color:t.c}}>{fmtBoth(f.gross[t.k])}</span></div>
+        <div className="section-body">
+          <Input label="가구 수" value={s.mem[t.k].n} onChange={v=>upd(t.k,'n',v)} suf="가구"/>
+          <Input label="멤버십 가격" value={s.mem[t.k].p} onChange={v=>upd(t.k,'p',v)} pre="$" result={fmtK(s.mem[t.k].p)}/>
+          <div className="margin-box"><h5>💰 마진 분석</h5>
+            <div className="margin-row"><span>판매가</span><span>{fmtBoth(s.mem[t.k].p)}</span></div>
+            <div className="margin-row"><span>건축비</span><span>{fmtBoth(t.cost)}</span></div>
+            <div className="margin-row" style={{fontWeight:700,borderTop:'2px solid #6ee7b7',paddingTop:10,marginTop:6}}><span>세대당 마진</span><span>{fmtBoth(t.margin)} ({fmtP(t.rate)})</span></div>
+            <div className="margin-row"><span>총 마진 ({s.mem[t.k].n}세대)</span><span>{fmtBoth(t.margin*s.mem[t.k].n)}</span></div>
+          </div>
+        </div>
+      </div>
+    )}
+    <div className="card"><div className="card-header"><span className="card-title">💼 본사 로얄티</span></div>
+      <Input label="로얄티율" value={s.fee} onChange={v=>setS(p=>({...p,fee:v}))} suf="%"/>
+      <div className="fee-box"><h5>📊 로얄티 계산</h5>
+        <div className="fee-row"><span>총 수입</span><span>{fmtBoth(f.gross.total)}</span></div>
+        <div className="fee-row"><span>로얄티율</span><span>{s.fee}%</span></div>
+        <div className="fee-row" style={{fontWeight:700,borderTop:'2px solid #fcd34d',paddingTop:12,marginTop:8}}><span>본사 로얄티</span><span>{fmtBoth(f.fee)}</span></div>
+        <div className="fee-row"><span>개발 예산</span><span>{fmtBoth(f.net)}</span></div>
+      </div>
+    </div>
+  </div>;
+};
+
+const Construction=({s,setS,f})=>{
+  const upd=(k,v)=>setS(p=>({...p,build:{...p.build,[k]:v}}));
+  return<div>
+    <div className="stats">
+      <Stat label="주거 건축" value={fmt(f.bldH)} krw={fmtK(f.bldH)} color="blue"/>
+      <Stat label="공용시설" value={fmt(f.bldF)} krw={fmtK(f.bldF)} color="purple"/>
+      <Stat label="인프라" value={fmt(f.bldI)} krw={fmtK(f.bldI)} color="yellow"/>
+      <Stat label="농업/식량" value={fmt(f.bldA)} krw={fmtK(f.bldA)} color="green"/>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🏠 주거 건축</div><span className="badge badge-blue">{fmtBoth(f.bldH)}</span></div>
+      <div className="section-body">
+        <Input label="Tier 1 단가" value={s.build.t1} onChange={v=>upd('t1',v)} pre="$" result={`${s.mem.t1.n}채 = ${fmtBoth(f.bldT1)}`}/>
+        <Input label="Tier 2 단가" value={s.build.t2} onChange={v=>upd('t2',v)} pre="$" result={`${s.mem.t2.n}채 = ${fmtBoth(f.bldT2)}`}/>
+        <Input label="Tier 3 단가" value={s.build.t3} onChange={v=>upd('t3',v)} pre="$" result={`${s.mem.t3.n}채 = ${fmtBoth(f.bldT3)}`}/>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🏛️ 공용시설</div><span className="badge badge-purple">{fmtBoth(f.bldF)}</span></div>
+      <div className="section-body">
+        <Input label="🏥 종합병원" value={s.build.hosp} onChange={v=>upd('hosp',v)} pre="$" result={fmtK(s.build.hosp)}/>
+        <Input label="🏢 커뮤니티센터" value={s.build.comm} onChange={v=>upd('comm',v)} pre="$" result={fmtK(s.build.comm)}/>
+        <Input label="🎓 K-12 학교" value={s.build.school} onChange={v=>upd('school',v)} pre="$" result={fmtK(s.build.school)}/>
+        <Input label="🔬 대학/연구소" value={s.build.uni} onChange={v=>upd('uni',v)} pre="$" result={fmtK(s.build.uni)}/>
+        <Input label="🏊 스포츠/수영장" value={s.build.sports} onChange={v=>upd('sports',v)} pre="$" result={fmtK(s.build.sports)}/>
+        <Input label="📚 도서관" value={s.build.lib} onChange={v=>upd('lib',v)} pre="$" result={fmtK(s.build.lib)}/>
+        <Input label="🎭 극장/공연장" value={s.build.theater} onChange={v=>upd('theater',v)} pre="$" result={fmtK(s.build.theater)}/>
+        <Input label="🛒 마켓플레이스" value={s.build.market} onChange={v=>upd('market',v)} pre="$" result={fmtK(s.build.market)}/>
+        <Input label="⛪ 종교시설" value={s.build.worship} onChange={v=>upd('worship',v)} pre="$" result={fmtK(s.build.worship)}/>
+        <Input label="👶 어린이집" value={s.build.daycare} onChange={v=>upd('daycare',v)} pre="$" result={fmtK(s.build.daycare)}/>
+        <Input label="👴 시니어센터" value={s.build.senior} onChange={v=>upd('senior',v)} pre="$" result={fmtK(s.build.senior)}/>
+        <Input label="🔧 예비비" value={s.build.reserve} onChange={v=>upd('reserve',v)} pre="$" result={fmtK(s.build.reserve)}/>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🛠️ 인프라</div><span className="badge badge-yellow">{fmtBoth(f.bldI)}</span></div>
+      <div className="section-body">
+        <Input label="🛣️ 도로망" value={s.build.roads} onChange={v=>upd('roads',v)} pre="$" result={fmtK(s.build.roads)}/>
+        <Input label="💧 상수도" value={s.build.water} onChange={v=>upd('water',v)} pre="$" result={fmtK(s.build.water)}/>
+        <Input label="🚿 하수도" value={s.build.sewer} onChange={v=>upd('sewer',v)} pre="$" result={fmtK(s.build.sewer)}/>
+        <Input label="⚡ 전력망" value={s.build.grid} onChange={v=>upd('grid',v)} pre="$" result={fmtK(s.build.grid)}/>
+        <Input label="📡 통신망" value={s.build.telecom} onChange={v=>upd('telecom',v)} pre="$" result={fmtK(s.build.telecom)}/>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🌾 농업/식량<span className="eco-badge">🌱 자급자족</span></div><span className="badge badge-green">{fmtBoth(f.bldA)}</span></div>
+      <div className="section-body">
+        <Input label="🌱 온실" value={s.build.gh} onChange={v=>upd('gh',v)} pre="$" result={fmtK(s.build.gh)}/>
+        <Input label="🤖 스마트팜" value={s.build.smart} onChange={v=>upd('smart',v)} pre="$" result={fmtK(s.build.smart)}/>
+        <Input label="🐄 축산시설" value={s.build.live} onChange={v=>upd('live',v)} pre="$" result={fmtK(s.build.live)}/>
+        <Input label="🐟 양식장" value={s.build.fish} onChange={v=>upd('fish',v)} pre="$" result={fmtK(s.build.fish)}/>
+        <Input label="🏪 저장창고" value={s.build.storage} onChange={v=>upd('storage',v)} pre="$" result={fmtK(s.build.storage)}/>
+        <Input label="🏭 식품가공" value={s.build.proc} onChange={v=>upd('proc',v)} pre="$" result={fmtK(s.build.proc)}/>
+      </div>
+    </div>
+  </div>;
+};
+const Energy=({s,setS,f})=>{
+  const upd=(k,v)=>setS(p=>({...p,energy:{...p.energy,[k]:v}}));
+  return<div>
+    <div className="alert">🌿 100% 재생에너지: 지열 + 수력 + 태양광 + 풍력</div>
+    <div className="stats">
+      <Stat label="필요 전력" value={`${(f.eD.total/1000).toFixed(1)} MW`} color="red"/>
+      <Stat label="발전 용량" value={`${(f.eS/1000).toFixed(1)} MW`} color="green"/>
+      <Stat label="잉여 전력" value={`${((f.eS-f.eD.total)/1000).toFixed(1)} MW`} color="blue"/>
+      <Stat label="에너지 투자" value={fmt(f.eC)} krw={fmtK(f.eC)} color="purple"/>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">📊 전력 수요</div><span className="badge badge-red">{(f.eD.total/1000).toFixed(2)} MW</span></div>
+      <div className="section-body">
+        <h4 style={{fontSize:14,fontWeight:600,marginBottom:14,color:'var(--text2)'}}>🏠 주거 전력</h4>
+        <Input label="Tier 1 세대당" value={s.energy.t1kw} onChange={v=>upd('t1kw',v)} suf="kW" result={`${s.mem.t1.n}세대 = ${fmtN(f.eD.t1)} kW`}/>
+        <Input label="Tier 2 세대당" value={s.energy.t2kw} onChange={v=>upd('t2kw',v)} suf="kW" result={`${s.mem.t2.n}세대 = ${fmtN(f.eD.t2)} kW`}/>
+        <Input label="Tier 3 세대당" value={s.energy.t3kw} onChange={v=>upd('t3kw',v)} suf="kW" result={`${s.mem.t3.n}세대 = ${fmtN(f.eD.t3)} kW`}/>
+        <div className="divider"></div>
+        <h4 style={{fontSize:14,fontWeight:600,marginBottom:14,color:'var(--text2)'}}>🏛️ 공용/기술</h4>
+        <Input label="공용시설" value={s.energy.commKw} onChange={v=>upd('commKw',v)} suf="kW"/>
+        <Input label="데이터센터" value={s.energy.dcKw} onChange={v=>upd('dcKw',v)} suf="kW"/>
+        <Input label="마이닝" value={s.energy.mineKw} onChange={v=>upd('mineKw',v)} suf="kW"/>
+        <div className="divider"></div>
+        <table><tbody>
+          <tr><td>주거 소계</td><td className="text-right font-bold">{fmtN(f.eD.res)} kW</td></tr>
+          <tr style={{background:'#fee2e2'}}><td className="font-bold">총 필요 전력</td><td className="text-right font-bold text-red">{fmtN(f.eD.total)} kW</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">⚡ 발전 설비<span className="eco-badge">🌱 100% 그린</span></div><span className="badge badge-green">{(f.eS/1000).toFixed(1)} MW</span></div>
+      <div className="section-body">
+        <Input label="🌋 지열 용량" value={s.energy.geoMW} onChange={v=>upd('geoMW',v)} suf="MW" result={fmtBoth(s.energy.geoMW*s.energy.geoCostPerMW)}/>
+        <Input label="지열 MW당 비용" value={s.energy.geoCostPerMW} onChange={v=>upd('geoCostPerMW',v)} pre="$"/>
+        <div className="divider"></div>
+        <Input label="💧 수력 용량" value={s.energy.hydroMW} onChange={v=>upd('hydroMW',v)} suf="MW" result={fmtBoth(s.energy.hydroMW*s.energy.hydroCost)}/>
+        <Input label="수력 MW당 비용" value={s.energy.hydroCost} onChange={v=>upd('hydroCost',v)} pre="$"/>
+        <div className="divider"></div>
+        <Input label="☀️ 태양광 용량" value={s.energy.solarMW} onChange={v=>upd('solarMW',v)} suf="MW" result={fmtBoth(s.energy.solarMW*s.energy.solarCost)}/>
+        <Input label="태양광 MW당 비용" value={s.energy.solarCost} onChange={v=>upd('solarCost',v)} pre="$"/>
+        <div className="divider"></div>
+        <Input label="🌬️ 풍력 용량" value={s.energy.windMW} onChange={v=>upd('windMW',v)} suf="MW" result={fmtBoth(s.energy.windMW*s.energy.windCost)}/>
+        <Input label="풍력 MW당 비용" value={s.energy.windCost} onChange={v=>upd('windCost',v)} pre="$"/>
+      </div>
+    </div>
+  </div>;
+};
+
+const Services=({s,setS,f})=>{
+  const upd=(cat,k,v)=>setS(p=>({...p,staff:{...p.staff,[cat]:{...p.staff[cat],[k]:v}}}));
+  const Sec=({title,icon,cat,fields,total,color='blue'})=><div className="section"><div className="section-header"><div className="section-title">{icon} {title}</div><span className={`badge badge-${color}`}>연 {fmt(total)}</span></div><div className="section-body">{fields.map(f=><Input key={f.k} label={f.l} value={s.staff[cat][f.k]} onChange={v=>upd(cat,f.k,v)} suf={f.s||''} pre={f.p||''}/>)}</div></div>;
+  return<div>
+    <div className="alert">💡 인건비만 관리합니다. 장비 비용은 [지출] 메뉴에서 별도 관리됩니다.</div>
+    <div className="stats">
+      <Stat label="연간 인건비" value={fmt(f.laborTotal)} krw={fmtK(f.laborTotal)} color="blue"/>
+      <Stat label="월간 인건비" value={fmt(f.laborMonth)} krw={fmtK(f.laborMonth)} color="purple"/>
+    </div>
+    <Sec title="보안" icon="🛡️" cat="security" total={f.laborYear.security} color="red" fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="의료" icon="🏥" cat="medical" total={f.laborYear.medical} color="blue" fields={[{k:'doc',l:'의사',s:'명'},{k:'nur',l:'간호사',s:'명'},{k:'docSal',l:'의사연봉',p:'$'},{k:'nurSal',l:'간호사연봉',p:'$'}]}/>
+    <Sec title="교육" icon="🎓" cat="education" total={f.laborYear.education} color="purple" fields={[{k:'teach',l:'교사',s:'명'},{k:'prof',l:'교수',s:'명'},{k:'tSal',l:'교사연봉',p:'$'},{k:'pSal',l:'교수연봉',p:'$'}]}/>
+    <Sec title="식당" icon="🍽️" cat="dining" total={f.laborYear.dining} color="yellow" fields={[{k:'chef',l:'셰프',s:'명'},{k:'staff',l:'스탭',s:'명'},{k:'sal',l:'평균연봉',p:'$'}]}/>
+    <Sec title="시설관리" icon="🔧" cat="maintenance" total={f.laborYear.maintenance} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="행정" icon="📋" cat="admin" total={f.laborYear.admin} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="IT" icon="💻" cat="it" total={f.laborYear.it} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="관제" icon="📡" cat="control" total={f.laborYear.control} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="마이닝" icon="⛏️" cat="mining" total={f.laborYear.mining} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="조경" icon="🌳" cat="garden" total={f.laborYear.garden} color="green" fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="피트니스" icon="🏋️" cat="fitness" total={f.laborYear.fitness} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="미용실" icon="💇" cat="salon" total={f.laborYear.salon} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="컨시어지" icon="🛎️" cat="concierge" total={f.laborYear.concierge} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="운송" icon="🚐" cat="driver" total={f.laborYear.driver} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="청소" icon="🧹" cat="cleaning" total={f.laborYear.cleaning} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="세탁" icon="👔" cat="laundry" total={f.laborYear.laundry} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="농장" icon="🌾" cat="farm" total={f.laborYear.farm} color="green" fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="축산" icon="🐄" cat="livestock" total={f.laborYear.livestock} color="green" fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+    <Sec title="리테일" icon="🛒" cat="retail" total={f.laborYear.retail} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
+  </div>;
+};
+const Tech=({s,setS,f,btc})=>{
+  const updD=(k,v)=>setS(p=>({...p,dc:{...p.dc,[k]:v}}));
+  const updM=(k,v)=>setS(p=>({...p,mine:{...p.mine,[k]:v}}));
+  const updR=v=>setS(p=>({...p,res:{total:v}}));
+  return<div>
+    <div className="stats">
+      <Stat label="데이터센터" value={fmt(f.dc)} krw={fmtK(f.dc)} color="purple"/>
+      <Stat label="마이닝 투자" value={fmt(f.mineCost)} krw={fmtK(f.mineCost)} color="yellow"/>
+      <Stat label="마이닝 연수익" value={fmt(f.mineRev.yearlyUSD)} krw={`${fmtBTC(f.mineRev.yearlyBTC)} BTC`} color="green"/>
+      <Stat label="비축금" value={fmt(f.res)} krw={fmtK(f.res)} color="red"/>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🖥️ 데이터센터</div><span className="badge badge-purple">{fmtBoth(f.dc)}</span></div>
+      <div className="section-body">
+        <Input label="서버" value={s.dc.srv} onChange={v=>updD('srv',v)} suf="대"/>
+        <Input label="서버당 비용" value={s.dc.cost} onChange={v=>updD('cost',v)} pre="$" result={fmtBoth(s.dc.srv*s.dc.cost)}/>
+        <Input label="인프라" value={s.dc.infra} onChange={v=>updD('infra',v)} pre="$" result={fmtK(s.dc.infra)}/>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">⛏️ 마이닝</div><span className="badge badge-yellow"><span className="live-dot"></span>실시간</span></div>
+      <div className="section-body">
+        <div className="btc-card">
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
+            <div><div style={{fontSize:12,color:'var(--text2)',marginBottom:6}}><span className="live-dot"></span>BTC 실시간 가격</div><span className="btc-price">${fmtN(Math.round(btc.price))}</span><span className={`btc-change ${btc.change>=0?'up':'down'}`}>{btc.change>=0?'▲':'▼'} {Math.abs(btc.change).toFixed(1)}%</span></div>
+            <div style={{textAlign:'right'}}><div style={{fontSize:12,color:'var(--text2)',marginBottom:6}}>네트워크 해시레이트</div><div style={{fontSize:22,fontWeight:700,color:'#d97706'}}>{btc.networkHash.toFixed(2)} EH/s</div></div>
+          </div>
+        </div>
+        <Input label="총 리그 수" value={s.mine.rigs} onChange={v=>updM('rigs',v)} suf="대"/>
+        <Input label="리그당 비용" value={s.mine.cost} onChange={v=>updM('cost',v)} pre="$"/>
+        <Input label="가동 리그 수" value={s.mine.active} onChange={v=>updM('active',v)} suf="대"/>
+        <Input label="리그당 해시레이트" value={s.mine.hashPerRig} onChange={v=>updM('hashPerRig',v)} suf="TH/s"/>
+        <div className="divider"></div>
+        <table><tbody>
+          <tr><td>가동률</td><td className="text-right font-bold">{fmtP(f.activeRate*100)} ({fmtN(s.mine.active)} / {fmtN(s.mine.rigs)} 대)</td></tr>
+          <tr><td>총 해시레이트</td><td className="text-right font-bold">{fmtN(Math.round(f.mineRev.totalHashTH))} TH/s ({f.mineRev.totalHashEH.toFixed(4)} EH/s)</td></tr>
+          <tr style={{background:'#fef9c3'}}><td className="font-bold">일일 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.dailyBTC)} BTC ≈ {fmt(f.mineRev.dailyUSD)}/day</td></tr>
+          <tr><td>월간 채굴 수익</td><td className="text-right">{fmtBTC(f.mineRev.monthlyBTC)} BTC ≈ {fmt(f.mineRev.monthlyUSD)}/month</td></tr>
+          <tr style={{background:'#dcfce7'}}><td className="font-bold">연간 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.yearlyBTC)} BTC ≈ {fmtBoth(f.mineRev.yearlyUSD)}/year</td></tr>
+        </tbody></table>
+        <div className="divider"></div>
+        <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',fontSize:14}}><span>투자 회수 기간</span><span className="font-bold text-blue">{f.mineRev.yearlyUSD>0?(f.mineCost/f.mineRev.yearlyUSD).toFixed(1):'∞'}년</span></div>
+      </div>
+    </div>
+    <div className="section"><div className="section-header"><div className="section-title">🏦 비축금</div><span className="badge badge-red">{fmtBoth(f.res)}</span></div>
+      <div className="section-body"><Input label="비축금 총액" value={s.res.total} onChange={updR} pre="$" result={fmtK(s.res.total)}/></div>
+    </div>
+  </div>;
+};
+
+function App(){
+  const[s,setS]=useState(()=>{try{const v=localStorage.getItem(STORAGE_KEY);if(v){const parsed=JSON.parse(v);return{...D,...parsed,equip:parsed.equip||D.equip,maintRate:parsed.maintRate||D.maintRate};}}catch(e){}return D;});
+  const[page,setPage]=useState('dashboard');
+  const[toast,setToast]=useState('');
+  const[btc,setBtc]=useState({price:101000,change:2.4,networkHash:750});
+  
+  useEffect(()=>{
+    const fetchBtc=async()=>{
+      try{
+        const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+        const d=await r.json();
+        if(d.bitcoin){setBtc(p=>({...p,price:d.bitcoin.usd,change:d.bitcoin.usd_24h_change||0}));}
+      }catch(e){}
+    };
+    fetchBtc();
+    const i=setInterval(fetchBtc,60000);
+    return()=>clearInterval(i);
+  },[]);
+  
+  const f=useMemo(()=>calc(s,btc),[s,btc]);
+  const showToast=m=>{setToast(m);setTimeout(()=>setToast(''),2000);};
+  const save=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));showToast('💾 저장 완료!');}catch(e){showToast('❌ 저장 실패');}};
+  const reset=()=>{if(confirm('초기화하시겠습니까?')){localStorage.removeItem(STORAGE_KEY);setS(D);showToast('🔄 초기화 완료!');}};
+  
+  const titles={dashboard:'대시보드',income:'수입',expense:'지출',membership:'멤버십',construction:'건축',energy:'에너지',services:'서비스/인력',tech:'기술'};
+  const icons={dashboard:'📊',income:'💰',expense:'💸',membership:'👥',construction:'🏗️',energy:'⚡',services:'🏥',tech:'🖥️'};
+  const render=()=>{
+    const p={s,setS,f,btc};
+    switch(page){
+      case'income':return<Income {...p}/>;
+      case'expense':return<Expense {...p}/>;
+      case'membership':return<Membership {...p}/>;
+      case'construction':return<Construction {...p}/>;
+      case'energy':return<Energy {...p}/>;
+      case'services':return<Services {...p}/>;
+      case'tech':return<Tech {...p}/>;
+      default:return<Dashboard {...p}/>;
+    }
+  };
+  return<div className="app">
+    <Sidebar page={page} setPage={setPage}/>
+    <div className="main">
+      <div className="topbar"><div className="page-title"><span>{icons[page]}</span>{titles[page]}<span className="eco-badge">🌱 Smart Green City</span></div></div>
+      <div className="save-bar"><button className="save-btn primary" onClick={save}>💾 저장</button><button className="save-btn danger" onClick={reset}>🔄 초기화</button></div>
+      <div className="content">{render()}</div>
+    </div>
+    <div className="widget"><h4>🌿 실시간 요약</h4>
+      <div className="widget-row"><span>순수입</span><span style={{color:'#52b788'}}>{fmt(f.net)}</span></div>
+      <div className="widget-row"><span>총지출</span><span style={{color:'#ef4444'}}>{fmt(f.totalExp)}</span></div>
+      <div className="widget-row total"><span>잉여금</span><span style={{color:f.bal>=0?'#52b788':'#ef4444'}}>{fmt(f.bal)}</span></div>
+      <div className="widget-krw">{fmtK(f.bal)}</div>
+    </div>
+    {toast&&<div className="toast">{toast}</div>}
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
