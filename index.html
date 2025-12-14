@@ -6,30 +6,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#f0f7f4;
-  --bg2:#ffffff;
-  --bg3:#e8f5e9;
-  --border:#c8e6c9;
-  --border2:#a5d6a7;
-  --text:#1b4332;
-  --text2:#52796f;
-  --text3:#74a892;
-  --primary:#2d6a4f;
-  --primary-light:#40916c;
-  --primary-dark:#1b4332;
-  --accent:#95d5b2;
-  --accent2:#b7e4c7;
-  --green:#2d6a4f;
-  --green-light:#52b788;
-  --red:#c1121f;
-  --yellow:#fb8500;
-  --blue:#0077b6;
-  --purple:#7b2cbf;
-  --wood:#dda15e;
-  --wood-light:#faedcd;
+  --bg:#f0f7f4;--bg2:#ffffff;--bg3:#e8f5e9;--border:#c8e6c9;--border2:#a5d6a7;
+  --text:#1b4332;--text2:#52796f;--text3:#74a892;
+  --primary:#2d6a4f;--primary-light:#40916c;--primary-dark:#1b4332;
+  --accent:#95d5b2;--accent2:#b7e4c7;--green:#2d6a4f;--green-light:#52b788;
+  --red:#c1121f;--yellow:#fb8500;--blue:#0077b6;--purple:#7b2cbf;
 }
 body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#f0f7f4 0%,#e8f5e9 50%,#d8f3dc 100%);color:var(--text);font-size:16px;min-height:100vh}
 .app{display:flex;min-height:100vh}
@@ -52,57 +38,35 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;backgrou
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--bg3)}
 .card-title{font-size:18px;font-weight:700;color:var(--primary-dark)}
 .badge{font-size:12px;padding:6px 14px;border-radius:20px;font-weight:600}
-.badge-blue{background:#e0f2fe;color:#0369a1}
-.badge-green{background:#dcfce7;color:#166534}
-.badge-red{background:#fee2e2;color:#b91c1c}
-.badge-yellow{background:#fef3c7;color:#b45309}
-.badge-purple{background:#f3e8ff;color:#7c3aed}
+.badge-blue{background:#e0f2fe;color:#0369a1}.badge-green{background:#dcfce7;color:#166534}.badge-red{background:#fee2e2;color:#b91c1c}.badge-yellow{background:#fef3c7;color:#b45309}.badge-purple{background:#f3e8ff;color:#7c3aed}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:32px}
 .stat{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(27,67,50,0.05)}
 .stat::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--primary)}
-.stat.green::before{background:linear-gradient(180deg,#52b788,#2d6a4f)}
-.stat.red::before{background:linear-gradient(180deg,#ef4444,#b91c1c)}
-.stat.yellow::before{background:linear-gradient(180deg,#fbbf24,#d97706)}
-.stat.purple::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
-.stat.blue::before{background:linear-gradient(180deg,#38bdf8,#0284c7)}
+.stat.green::before{background:linear-gradient(180deg,#52b788,#2d6a4f)}.stat.red::before{background:linear-gradient(180deg,#ef4444,#b91c1c)}.stat.yellow::before{background:linear-gradient(180deg,#fbbf24,#d97706)}.stat.purple::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}.stat.blue::before{background:linear-gradient(180deg,#38bdf8,#0284c7)}
 .stat-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
-.stat-value{font-size:24px;font-weight:800;color:var(--primary-dark)}
-.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
-.stat-krw{font-size:12px;color:var(--text2);margin-top:4px}
-table{width:100%;border-collapse:collapse}
-th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
-th{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;background:var(--bg3);letter-spacing:0.5px}
-tr:hover{background:var(--bg3)}
-.text-right{text-align:right}
-.text-green{color:var(--green)}
-.text-red{color:var(--red)}
-.text-blue{color:var(--blue)}
-.font-bold{font-weight:700}
+.stat-value{font-size:24px;font-weight:800;color:var(--primary-dark)}.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}.stat-krw{font-size:12px;color:var(--text2);margin-top:4px}
+table{width:100%;border-collapse:collapse}th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+th{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;background:var(--bg3);letter-spacing:0.5px}tr:hover{background:var(--bg3)}
+.text-right{text-align:right}.text-green{color:var(--green)}.text-red{color:var(--red)}.text-blue{color:var(--blue)}.font-bold{font-weight:700}
 .summary{background:linear-gradient(135deg,#d8f3dc,#b7e4c7);border:2px solid var(--accent);border-radius:16px;padding:24px;margin-bottom:28px}
 .summary-title{font-size:12px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;margin-bottom:16px;letter-spacing:1px}
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px}
-.summary-label{font-size:12px;color:var(--text2);margin-bottom:6px}
-.summary-value{font-size:22px;font-weight:800;color:var(--primary-dark)}
-.summary-krw{font-size:11px;color:var(--text2)}
+.summary-label{font-size:12px;color:var(--text2);margin-bottom:6px}.summary-value{font-size:22px;font-weight:800;color:var(--primary-dark)}.summary-krw{font-size:11px;color:var(--text2)}
 .alert{padding:16px 20px;border-radius:12px;margin-bottom:24px;font-size:14px;background:linear-gradient(135deg,#d8f3dc,#b7e4c7);border:1px solid var(--accent);color:var(--primary-dark);display:flex;align-items:center;gap:10px}
 .alert-red{background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #fca5a5;color:#991b1b}
 .section{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:0 4px 15px rgba(27,67,50,0.05)}
 .section-header{padding:18px 24px;background:linear-gradient(135deg,var(--bg3),#d8f3dc);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .section-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;color:var(--primary-dark)}
 .section-body{padding:24px}
-.input-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bg3)}
-.input-row:last-child{border-bottom:none}
-.input-row label{font-size:14px;font-weight:500;color:var(--text)}
+.input-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bg3)}.input-row:last-child{border-bottom:none}.input-row label{font-size:14px;font-weight:500;color:var(--text)}
 .input-row input{width:130px;padding:12px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;text-align:right;color:var(--primary-dark);transition:all 0.2s ease}
 .input-row input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(45,106,79,0.1)}
 .input-row .result{font-size:13px;color:var(--text2);min-width:100px;text-align:right}
 .divider{height:2px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:20px 0}
-.grid{display:grid;gap:24px}
-.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid{display:grid;gap:24px}.grid-2{grid-template-columns:repeat(2,1fr)}
 @media(max-width:1100px){.grid-2{grid-template-columns:1fr}.sidebar{display:none}.main{margin-left:0}}
 @keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}10%{opacity:1;transform:translateX(-50%) translateY(0)}90%{opacity:1}100%{opacity:0}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .widget{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,#1b4332,#2d6a4f);border-radius:16px;padding:20px 24px;box-shadow:0 8px 32px rgba(27,67,50,0.3);z-index:100;min-width:280px;color:#fff}
 .widget h4{font-size:10px;font-weight:700;color:#95d5b2;text-transform:uppercase;margin-bottom:14px;letter-spacing:2px}
 .widget-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:rgba(255,255,255,0.8)}
@@ -110,10 +74,8 @@ tr:hover{background:var(--bg3)}
 .widget-krw{font-size:11px;color:#95d5b2;margin-top:4px}
 .save-bar{position:fixed;top:72px;right:32px;display:flex;gap:12px;z-index:60;padding-top:16px}
 .save-btn{padding:12px 20px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
-.save-btn.primary{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff}
-.save-btn.primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,106,79,0.3)}
-.save-btn.danger{background:#fff;border:2px solid #fca5a5;color:#b91c1c}
-.save-btn.danger:hover{background:#fee2e2}
+.save-btn.primary{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff}.save-btn.primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,106,79,0.3)}
+.save-btn.danger{background:#fff;border:2px solid #fca5a5;color:#b91c1c}.save-btn.danger:hover{background:#fee2e2}
 .toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1b4332,#2d6a4f);color:#fff;padding:16px 32px;border-radius:12px;font-weight:600;z-index:200;animation:fadeInOut 2s ease;box-shadow:0 8px 32px rgba(27,67,50,0.3)}
 .fee-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #fcd34d;border-radius:12px;padding:18px;margin-top:18px}
 .fee-box h5{font-size:12px;font-weight:700;color:#92400e;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
@@ -124,17 +86,32 @@ tr:hover{background:var(--bg3)}
 .live-dot{width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;margin-right:8px;animation:pulse 1.5s infinite;box-shadow:0 0 8px #22c55e}
 .btc-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:16px;padding:24px;margin-bottom:24px}
 .btc-price{font-size:32px;font-weight:800;color:#d97706}
-.btc-change{font-size:13px;padding:6px 12px;border-radius:20px;font-weight:600;margin-left:12px}
-.btc-change.up{background:#dcfce7;color:#166534}
-.btc-change.down{background:#fee2e2;color:#b91c1c}
+.btc-change{font-size:13px;padding:6px 12px;border-radius:20px;font-weight:600;margin-left:12px}.btc-change.up{background:#dcfce7;color:#166534}.btc-change.down{background:#fee2e2;color:#b91c1c}
 .eco-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#d8f3dc,#b7e4c7);padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;color:#166534;margin-left:12px}
+.sync-status{display:flex;align-items:center;gap:8px;font-size:12px;color:#95d5b2;margin-top:8px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 1.5s infinite}
+.sync-dot.offline{background:#ef4444;animation:none}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const{useState,useMemo,useEffect}=React;
-const RATE=1400;const STORAGE_KEY='nova_ark_v11';
+const RATE=1400;
+
+// Firebase 설정
+const firebaseConfig={
+  apiKey:"AIzaSyDAPClHhCgrYs-jCCR-e10YaWaGxpByxpg",
+  authDomain:"novaark-ops.firebaseapp.com",
+  databaseURL:"https://novaark-ops-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"novaark-ops",
+  storageBucket:"novaark-ops.firebasestorage.app",
+  messagingSenderId:"85862695572",
+  appId:"1:85862695572:web:2b3a670c343b2e2e466a81"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 const D={
   mem:{t1:{n:200,p:5000000},t2:{n:700,p:1500000},t3:{n:700,p:500000}},
   fee:10,
@@ -170,25 +147,14 @@ function calc(s,btc){
   const maintYear=equipT*s.maintRate;
   const st=s.staff;
   const laborYear={
-    security:st.security.n*st.security.sal,
-    medical:st.medical.doc*st.medical.docSal+st.medical.nur*st.medical.nurSal,
+    security:st.security.n*st.security.sal,medical:st.medical.doc*st.medical.docSal+st.medical.nur*st.medical.nurSal,
     education:st.education.teach*st.education.tSal+st.education.prof*st.education.pSal,
-    dining:(st.dining.chef+st.dining.staff)*st.dining.sal,
-    maintenance:st.maintenance.n*st.maintenance.sal,
-    admin:st.admin.n*st.admin.sal,
-    it:st.it.n*st.it.sal,
-    mining:st.mining.n*st.mining.sal,
-    garden:st.garden.n*st.garden.sal,
-    fitness:st.fitness.n*st.fitness.sal,
-    salon:st.salon.n*st.salon.sal,
-    control:st.control.n*st.control.sal,
-    concierge:st.concierge.n*st.concierge.sal,
-    driver:st.driver.n*st.driver.sal,
-    cleaning:st.cleaning.n*st.cleaning.sal,
-    laundry:st.laundry.n*st.laundry.sal,
-    farm:st.farm.n*st.farm.sal,
-    livestock:st.livestock.n*st.livestock.sal,
-    retail:st.retail.n*st.retail.sal
+    dining:(st.dining.chef+st.dining.staff)*st.dining.sal,maintenance:st.maintenance.n*st.maintenance.sal,
+    admin:st.admin.n*st.admin.sal,it:st.it.n*st.it.sal,mining:st.mining.n*st.mining.sal,
+    garden:st.garden.n*st.garden.sal,fitness:st.fitness.n*st.fitness.sal,salon:st.salon.n*st.salon.sal,
+    control:st.control.n*st.control.sal,concierge:st.concierge.n*st.concierge.sal,driver:st.driver.n*st.driver.sal,
+    cleaning:st.cleaning.n*st.cleaning.sal,laundry:st.laundry.n*st.laundry.sal,
+    farm:st.farm.n*st.farm.sal,livestock:st.livestock.n*st.livestock.sal,retail:st.retail.n*st.retail.sal
   };
   const laborTotal=Object.values(laborYear).reduce((a,b)=>a+b,0);
   const laborMonth=laborTotal/12;
@@ -225,7 +191,7 @@ const Input=({label,value,onChange,suf='',pre='',result})=>{
   const handleKey=e=>{if(e.key==='Enter')e.target.blur();};
   return<div className="input-row"><label>{label}</label><div style={{display:'flex',alignItems:'center',gap:'8px'}}>{result&&<span className="result">{result}</span>}{pre&&<span style={{color:'var(--text2)',fontWeight:500}}>{pre}</span>}<input type="text" inputMode="numeric" value={local} onChange={handleChange} onBlur={handleBlur} onKeyDown={handleKey}/>{suf&&<span style={{color:'var(--text2)',fontWeight:500}}>{suf}</span>}</div></div>;
 };
-const Sidebar=({page,setPage})=>{
+const Sidebar=({page,setPage,isOnline})=>{
   const nav=[{id:'dashboard',icon:'📊',label:'대시보드'},{id:'income',icon:'💰',label:'수입'},{id:'expense',icon:'💸',label:'지출'},{id:'membership',icon:'👥',label:'멤버십'},{id:'construction',icon:'🏗️',label:'건축'},{id:'energy',icon:'⚡',label:'에너지'},{id:'services',icon:'🏥',label:'서비스/인력'},{id:'tech',icon:'🖥️',label:'기술'}];
   return<div className="sidebar">
     <div className="logo">
@@ -235,6 +201,7 @@ const Sidebar=({page,setPage})=>{
     <div className="nav">
       <div className="nav-title">메뉴</div>
       {nav.map(n=><div key={n.id} className={`nav-item ${page===n.id?'active':''}`} onClick={()=>setPage(n.id)}><span>{n.icon}</span>{n.label}</div>)}
+      <div className="sync-status"><span className={`sync-dot ${isOnline?'':'offline'}`}></span>{isOnline?'서버 연결됨':'오프라인'}</div>
     </div>
   </div>;
 };
@@ -333,6 +300,7 @@ const Income=({s,setS,f,btc})=>{
     </div>
   </div>;
 };
+
 const Expense=({s,setS,f})=>{
   const updEq=(k,v)=>setS(p=>({...p,equip:{...p.equip,[k]:v}}));
   const updMR=v=>setS(p=>({...p,maintRate:v/100}));
@@ -352,18 +320,6 @@ const Expense=({s,setS,f})=>{
         <tr><td style={{paddingLeft:30}}>- T3 ({s.mem.t3.n}채)</td><td className="text-right">{fmt(f.bldT3)}</td><td className="text-right">{fmtK(f.bldT3)}</td></tr>
         <tr><td>🏛️ 공용시설</td><td className="text-right">{fmt(f.bldF)}</td><td className="text-right">{fmtK(f.bldF)}</td></tr>
         <tr style={{background:'#dbeafe'}}><td className="font-bold">건축 소계</td><td className="text-right font-bold">{fmt(f.bldT)}</td><td className="text-right font-bold">{fmtK(f.bldT)}</td></tr>
-      </tbody></table></div>
-    </div>
-    <div className="section"><div className="section-header"><div className="section-title">🛠️ 인프라 지출</div><span className="badge badge-yellow">{fmtBoth(f.bldI+f.land+f.eC)}</span></div>
-      <div className="section-body"><table><thead><tr><th>항목</th><th className="text-right">금액</th><th className="text-right">원화</th></tr></thead><tbody>
-        <tr><td>🗺️ 토지</td><td className="text-right">{fmt(f.land)}</td><td className="text-right">{fmtK(f.land)}</td></tr>
-        <tr><td>⚡ 에너지 설비</td><td className="text-right">{fmt(f.eC)}</td><td className="text-right">{fmtK(f.eC)}</td></tr>
-        <tr><td>🛣️ 도로망</td><td className="text-right">{fmt(s.build.roads)}</td><td className="text-right">{fmtK(s.build.roads)}</td></tr>
-        <tr><td>💧 상수도</td><td className="text-right">{fmt(s.build.water)}</td><td className="text-right">{fmtK(s.build.water)}</td></tr>
-        <tr><td>🚿 하수도</td><td className="text-right">{fmt(s.build.sewer)}</td><td className="text-right">{fmtK(s.build.sewer)}</td></tr>
-        <tr><td>⚡ 전력망</td><td className="text-right">{fmt(s.build.grid)}</td><td className="text-right">{fmtK(s.build.grid)}</td></tr>
-        <tr><td>📡 통신망</td><td className="text-right">{fmt(s.build.telecom)}</td><td className="text-right">{fmtK(s.build.telecom)}</td></tr>
-        <tr style={{background:'#fef9c3'}}><td className="font-bold">인프라 소계</td><td className="text-right font-bold">{fmt(f.bldI+f.land+f.eC)}</td><td className="text-right font-bold">{fmtK(f.bldI+f.land+f.eC)}</td></tr>
       </tbody></table></div>
     </div>
     <div className="section"><div className="section-header"><div className="section-title">🔧 초기 장비 (1회성)</div><span className="badge badge-purple">{fmtBoth(f.equipT)}</span></div>
@@ -391,7 +347,6 @@ const Expense=({s,setS,f})=>{
           <tr><td>초기 장비 총액</td><td className="text-right">{fmtBoth(f.equipT)}</td></tr>
           <tr><td>유지보수율</td><td className="text-right">{fmtP(s.maintRate*100)}</td></tr>
           <tr style={{background:'#fef9c3'}}><td className="font-bold">연간 유지보수비</td><td className="text-right font-bold">{fmtBoth(f.maintYear)}</td></tr>
-          <tr><td>월간 유지보수비</td><td className="text-right">{fmtBoth(f.maintYear/12)}</td></tr>
         </tbody></table>
       </div>
     </div>
@@ -402,24 +357,6 @@ const Expense=({s,setS,f})=>{
           <tr style={{background:'#dbeafe'}}><td className="font-bold">합계</td><td className="text-right font-bold">{fmtBoth(f.laborTotal)}</td><td className="text-right font-bold">{fmtBoth(f.laborMonth)}</td></tr>
         </tbody></table>
       </div>
-    </div>
-    <div className="summary"><div className="summary-title">💸 총 지출 요약</div>
-      <table><thead><tr><th>분류</th><th className="text-right">금액</th><th className="text-right">비율</th></tr></thead><tbody>
-        <tr><td>🏗️ 건축</td><td className="text-right">{fmt(f.bldT)}</td><td className="text-right">{fmtP(f.bldT/f.totalExp*100)}</td></tr>
-        <tr><td>🛠️ 인프라</td><td className="text-right">{fmt(f.bldI+f.land+f.eC)}</td><td className="text-right">{fmtP((f.bldI+f.land+f.eC)/f.totalExp*100)}</td></tr>
-        <tr><td>🌾 농업</td><td className="text-right">{fmt(f.bldA)}</td><td className="text-right">{fmtP(f.bldA/f.totalExp*100)}</td></tr>
-        <tr><td>🔧 초기 장비</td><td className="text-right">{fmt(f.equipT)}</td><td className="text-right">{fmtP(f.equipT/f.totalExp*100)}</td></tr>
-        <tr><td>🖥️ 기술</td><td className="text-right">{fmt(f.dc+f.mineCost)}</td><td className="text-right">{fmtP((f.dc+f.mineCost)/f.totalExp*100)}</td></tr>
-        <tr><td>💼 기타</td><td className="text-right">{fmt(f.fee+f.res)}</td><td className="text-right">{fmtP((f.fee+f.res)/f.totalExp*100)}</td></tr>
-        <tr style={{background:'#fee2e2'}}><td className="font-bold">초기 지출 총계</td><td className="text-right font-bold text-red">{fmt(f.totalExp)}</td><td className="text-right font-bold">100%</td></tr>
-      </tbody></table>
-      <div className="divider"></div>
-      <table><thead><tr><th>운영비 (연간)</th><th className="text-right">금액</th></tr></thead><tbody>
-        <tr><td>👥 인건비</td><td className="text-right">{fmtBoth(f.laborTotal)}</td></tr>
-        <tr><td>🔄 유지보수비</td><td className="text-right">{fmtBoth(f.maintYear)}</td></tr>
-        <tr style={{background:'#fef9c3'}}><td className="font-bold">연간 운영비 총계</td><td className="text-right font-bold">{fmtBoth(f.laborTotal+f.maintYear)}</td></tr>
-        <tr><td>월간 운영비</td><td className="text-right">{fmtBoth((f.laborTotal+f.maintYear)/12)}</td></tr>
-      </tbody></table>
     </div>
   </div>;
 };
@@ -442,7 +379,6 @@ const Membership=({s,setS,f})=>{
             <div className="margin-row"><span>판매가</span><span>{fmtBoth(s.mem[t.k].p)}</span></div>
             <div className="margin-row"><span>건축비</span><span>{fmtBoth(t.cost)}</span></div>
             <div className="margin-row" style={{fontWeight:700,borderTop:'2px solid #6ee7b7',paddingTop:10,marginTop:6}}><span>세대당 마진</span><span>{fmtBoth(t.margin)} ({fmtP(t.rate)})</span></div>
-            <div className="margin-row"><span>총 마진 ({s.mem[t.k].n}세대)</span><span>{fmtBoth(t.margin*s.mem[t.k].n)}</span></div>
           </div>
         </div>
       </div>
@@ -453,7 +389,6 @@ const Membership=({s,setS,f})=>{
         <div className="fee-row"><span>총 수입</span><span>{fmtBoth(f.gross.total)}</span></div>
         <div className="fee-row"><span>로얄티율</span><span>{s.fee}%</span></div>
         <div className="fee-row" style={{fontWeight:700,borderTop:'2px solid #fcd34d',paddingTop:12,marginTop:8}}><span>본사 로얄티</span><span>{fmtBoth(f.fee)}</span></div>
-        <div className="fee-row"><span>개발 예산</span><span>{fmtBoth(f.net)}</span></div>
       </div>
     </div>
   </div>;
@@ -488,7 +423,6 @@ const Construction=({s,setS,f})=>{
         <Input label="⛪ 종교시설" value={s.build.worship} onChange={v=>upd('worship',v)} pre="$" result={fmtK(s.build.worship)}/>
         <Input label="👶 어린이집" value={s.build.daycare} onChange={v=>upd('daycare',v)} pre="$" result={fmtK(s.build.daycare)}/>
         <Input label="👴 시니어센터" value={s.build.senior} onChange={v=>upd('senior',v)} pre="$" result={fmtK(s.build.senior)}/>
-        <Input label="🔧 예비비" value={s.build.reserve} onChange={v=>upd('reserve',v)} pre="$" result={fmtK(s.build.reserve)}/>
       </div>
     </div>
     <div className="section"><div className="section-header"><div className="section-title">🛠️ 인프라</div><span className="badge badge-yellow">{fmtBoth(f.bldI)}</span></div>
@@ -533,11 +467,6 @@ const Energy=({s,setS,f})=>{
         <Input label="공용시설" value={s.energy.commKw} onChange={v=>upd('commKw',v)} suf="kW"/>
         <Input label="데이터센터" value={s.energy.dcKw} onChange={v=>upd('dcKw',v)} suf="kW"/>
         <Input label="마이닝" value={s.energy.mineKw} onChange={v=>upd('mineKw',v)} suf="kW"/>
-        <div className="divider"></div>
-        <table><tbody>
-          <tr><td>주거 소계</td><td className="text-right font-bold">{fmtN(f.eD.res)} kW</td></tr>
-          <tr style={{background:'#fee2e2'}}><td className="font-bold">총 필요 전력</td><td className="text-right font-bold text-red">{fmtN(f.eD.total)} kW</td></tr>
-        </tbody></table>
       </div>
     </div>
     <div className="section"><div className="section-header"><div className="section-title">⚡ 발전 설비<span className="eco-badge">🌱 100% 그린</span></div><span className="badge badge-green">{(f.eS/1000).toFixed(1)} MW</span></div>
@@ -588,6 +517,7 @@ const Services=({s,setS,f})=>{
     <Sec title="리테일" icon="🛒" cat="retail" total={f.laborYear.retail} fields={[{k:'n',l:'인원',s:'명'},{k:'sal',l:'연봉',p:'$'}]}/>
   </div>;
 };
+
 const Tech=({s,setS,f,btc})=>{
   const updD=(k,v)=>setS(p=>({...p,dc:{...p.dc,[k]:v}}));
   const updM=(k,v)=>setS(p=>({...p,mine:{...p.mine,[k]:v}}));
@@ -620,14 +550,10 @@ const Tech=({s,setS,f,btc})=>{
         <Input label="리그당 해시레이트" value={s.mine.hashPerRig} onChange={v=>updM('hashPerRig',v)} suf="TH/s"/>
         <div className="divider"></div>
         <table><tbody>
-          <tr><td>가동률</td><td className="text-right font-bold">{fmtP(f.activeRate*100)} ({fmtN(s.mine.active)} / {fmtN(s.mine.rigs)} 대)</td></tr>
-          <tr><td>총 해시레이트</td><td className="text-right font-bold">{fmtN(Math.round(f.mineRev.totalHashTH))} TH/s ({f.mineRev.totalHashEH.toFixed(4)} EH/s)</td></tr>
-          <tr style={{background:'#fef9c3'}}><td className="font-bold">일일 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.dailyBTC)} BTC ≈ {fmt(f.mineRev.dailyUSD)}/day</td></tr>
-          <tr><td>월간 채굴 수익</td><td className="text-right">{fmtBTC(f.mineRev.monthlyBTC)} BTC ≈ {fmt(f.mineRev.monthlyUSD)}/month</td></tr>
-          <tr style={{background:'#dcfce7'}}><td className="font-bold">연간 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.yearlyBTC)} BTC ≈ {fmtBoth(f.mineRev.yearlyUSD)}/year</td></tr>
+          <tr><td>가동률</td><td className="text-right font-bold">{fmtP(f.activeRate*100)}</td></tr>
+          <tr><td>총 해시레이트</td><td className="text-right font-bold">{fmtN(Math.round(f.mineRev.totalHashTH))} TH/s</td></tr>
+          <tr style={{background:'#dcfce7'}}><td className="font-bold">연간 채굴 수익</td><td className="text-right font-bold text-green">{fmtBTC(f.mineRev.yearlyBTC)} BTC ≈ {fmtBoth(f.mineRev.yearlyUSD)}</td></tr>
         </tbody></table>
-        <div className="divider"></div>
-        <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',fontSize:14}}><span>투자 회수 기간</span><span className="font-bold text-blue">{f.mineRev.yearlyUSD>0?(f.mineCost/f.mineRev.yearlyUSD).toFixed(1):'∞'}년</span></div>
       </div>
     </div>
     <div className="section"><div className="section-header"><div className="section-title">🏦 비축금</div><span className="badge badge-red">{fmtBoth(f.res)}</span></div>
@@ -635,19 +561,61 @@ const Tech=({s,setS,f,btc})=>{
     </div>
   </div>;
 };
-
 function App(){
-  const[s,setS]=useState(()=>{try{const v=localStorage.getItem(STORAGE_KEY);if(v){const parsed=JSON.parse(v);return{...D,...parsed,equip:parsed.equip||D.equip,maintRate:parsed.maintRate||D.maintRate};}}catch(e){}return D;});
+  const[s,setS]=useState(D);
   const[page,setPage]=useState('dashboard');
   const[toast,setToast]=useState('');
   const[btc,setBtc]=useState({price:101000,change:2.4,networkHash:750});
+  const[isOnline,setIsOnline]=useState(true);
+  const[loading,setLoading]=useState(true);
   
+  // Firebase에서 데이터 불러오기
+  useEffect(()=>{
+    const dataRef=db.ref('novaark-data');
+    
+    // 실시간 리스너
+    dataRef.on('value',(snapshot)=>{
+      const data=snapshot.val();
+      if(data){
+        setS(data);
+        setIsOnline(true);
+      }
+      setLoading(false);
+    },(error)=>{
+      console.error('Firebase error:',error);
+      setIsOnline(false);
+      setLoading(false);
+      // 오프라인이면 localStorage에서 불러오기
+      try{
+        const local=localStorage.getItem('nova_ark_v12');
+        if(local)setS(JSON.parse(local));
+      }catch(e){}
+    });
+    
+    // 연결 상태 모니터링
+    const connRef=db.ref('.info/connected');
+    connRef.on('value',(snap)=>{
+      setIsOnline(snap.val()===true);
+    });
+    
+    return()=>{
+      dataRef.off();
+      connRef.off();
+    };
+  },[]);
+  
+  // BTC 가격 실시간
   useEffect(()=>{
     const fetchBtc=async()=>{
       try{
-        const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-        const d=await r.json();
-        if(d.bitcoin){setBtc(p=>({...p,price:d.bitcoin.usd,change:d.bitcoin.usd_24h_change||0}));}
+        const[priceRes,hashRes]=await Promise.all([
+          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true'),
+          fetch('https://blockchain.info/q/hashrate')
+        ]);
+        const d=await priceRes.json();
+        const hashTHs=await hashRes.text();
+        const networkEH=parseFloat(hashTHs)/1e6;
+        if(d.bitcoin){setBtc(p=>({...p,price:d.bitcoin.usd,change:d.bitcoin.usd_24h_change||0,networkHash:networkEH||750}));}
       }catch(e){}
     };
     fetchBtc();
@@ -657,8 +625,28 @@ function App(){
   
   const f=useMemo(()=>calc(s,btc),[s,btc]);
   const showToast=m=>{setToast(m);setTimeout(()=>setToast(''),2000);};
-  const save=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));showToast('💾 저장 완료!');}catch(e){showToast('❌ 저장 실패');}};
-  const reset=()=>{if(confirm('초기화하시겠습니까?')){localStorage.removeItem(STORAGE_KEY);setS(D);showToast('🔄 초기화 완료!');}};
+  
+  // Firebase에 저장
+  const save=()=>{
+    try{
+      db.ref('novaark-data').set(s);
+      localStorage.setItem('nova_ark_v12',JSON.stringify(s));
+      showToast('💾 서버에 저장됨!');
+    }catch(e){
+      // Firebase 실패시 로컬에만 저장
+      localStorage.setItem('nova_ark_v12',JSON.stringify(s));
+      showToast('💾 로컬에 저장됨 (오프라인)');
+    }
+  };
+  
+  const reset=()=>{
+    if(confirm('초기화하시겠습니까? 모든 데이터가 기본값으로 돌아갑니다.')){
+      db.ref('novaark-data').set(D);
+      localStorage.removeItem('nova_ark_v12');
+      setS(D);
+      showToast('🔄 초기화 완료!');
+    }
+  };
   
   const titles={dashboard:'대시보드',income:'수입',expense:'지출',membership:'멤버십',construction:'건축',energy:'에너지',services:'서비스/인력',tech:'기술'};
   const icons={dashboard:'📊',income:'💰',expense:'💸',membership:'👥',construction:'🏗️',energy:'⚡',services:'🏥',tech:'🖥️'};
@@ -675,11 +663,17 @@ function App(){
       default:return<Dashboard {...p}/>;
     }
   };
+  
+  if(loading)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'linear-gradient(135deg,#f0f7f4,#d8f3dc)'}}><div style={{textAlign:'center'}}><div style={{fontSize:48,marginBottom:16}}>🌿</div><div style={{color:'#2d6a4f',fontWeight:600}}>로딩 중...</div></div></div>;
+  
   return<div className="app">
-    <Sidebar page={page} setPage={setPage}/>
+    <Sidebar page={page} setPage={setPage} isOnline={isOnline}/>
     <div className="main">
       <div className="topbar"><div className="page-title"><span>{icons[page]}</span>{titles[page]}<span className="eco-badge">🌱 Smart Green City</span></div></div>
-      <div className="save-bar"><button className="save-btn primary" onClick={save}>💾 저장</button><button className="save-btn danger" onClick={reset}>🔄 초기화</button></div>
+      <div className="save-bar">
+        <button className="save-btn primary" onClick={save}>💾 저장 {isOnline?'(서버)':'(로컬)'}</button>
+        <button className="save-btn danger" onClick={reset}>🔄 초기화</button>
+      </div>
       <div className="content">{render()}</div>
     </div>
     <div className="widget"><h4>🌿 실시간 요약</h4>
@@ -687,6 +681,7 @@ function App(){
       <div className="widget-row"><span>총지출</span><span style={{color:'#ef4444'}}>{fmt(f.totalExp)}</span></div>
       <div className="widget-row total"><span>잉여금</span><span style={{color:f.bal>=0?'#52b788':'#ef4444'}}>{fmt(f.bal)}</span></div>
       <div className="widget-krw">{fmtK(f.bal)}</div>
+      <div className="sync-status" style={{marginTop:12,paddingTop:10,borderTop:'1px solid rgba(255,255,255,0.2)'}}><span className={`sync-dot ${isOnline?'':'offline'}`}></span>{isOnline?'서버 동기화됨':'오프라인 모드'}</div>
     </div>
     {toast&&<div className="toast">{toast}</div>}
   </div>;
